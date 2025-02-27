@@ -1,0 +1,142 @@
+function ChatRoom({
+    room,
+    messages,
+    currentUser,
+    onSendMessage,
+    keyPair,
+    publicKeys,
+    getPublicKey
+}) {
+    const [messageText, setMessageText] = useState('');
+    const [recipient, setRecipient] = useState('');
+    const [decryptedMessages, setDecryptedMessages] = useState({});
+    const messagesEndRef = useRef(null);
+
+    // Decrypt messages when they change
+    useEffect(() => {
+        const decryptMessages = async () => {
+            const decrypted = {};
+
+            for (const message of messages) {
+                // Only decrypt messages sent to current user
+                if (message.type === 'user' && message.recipient === currentUser.username) {
+                    try {
+                        const decryptedContent = await decryptMessage(
+                            message.content,
+                            keyPair.privateKey
+                        );
+                        decrypted[message.id] = decryptedContent;
+                    } catch (error) {
+                        console.error('Error decrypting message:', error);
+                        decrypted[message.id] = '[Encryption error: Could not decrypt message]';
+                    }
+                }
+            }
+
+            setDecryptedMessages((prev) => ({ ...prev, ...decrypted }));
+        };
+
+        if (messages.length > 0 && keyPair?.privateKey) {
+            decryptMessages();
+        }
+    }, [messages, keyPair, currentUser]);
+
+    // Scroll to bottom when messages change
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages, decryptedMessages]);
+
+    const handleSendMessage = (e) => {
+        e.preventDefault();
+
+        if (!messageText.trim() || !recipient.trim()) return;
+
+        onSendMessage(messageText, recipient);
+        setMessageText('');
+    };
+
+    const displayMessage = (message) => {
+        if (message.type === 'system') {
+            return <span className="message-content system">{message.content}</span>;
+        }
+
+        // If message was sent by current user
+        if (message.sender === currentUser.username) {
+            return <span className="message-content sent">{messageText}</span>;
+        }
+
+        // If message was sent to current user and we have decrypted it
+        if (message.recipient === currentUser.username && decryptedMessages[message.id]) {
+            return <span className="message-content received">{decryptedMessages[message.id]}</span>;
+        }
+
+        // If message wasn't sent to current user (or couldn't be decrypted)
+        return <span className="message-content encrypted">[Encrypted message]</span>;
+    };
+
+    return (
+        <div className="chat-room">
+            <div className="chat-header">
+                <h2>{room.name}</h2>
+                <div className="room-info">
+                    <span>Created by: {room.created_by}</span>
+                    <span>Users: {room.users?.join(', ')}</span>
+                </div>
+            </div>
+
+            <div className="messages-container">
+                <div className="messages">
+                    {messages.map((message) => (
+                        <div
+                            key={message.id}
+                            className={`message-wrapper ${message.type === 'system'
+                                ? 'system-message'
+                                : message.sender === currentUser.username
+                                    ? 'sent-message'
+                                    : 'received-message'
+                                }`}
+                        >
+                            <div className="message">
+                                {message.type !== 'system' && (
+                                    <span className="message-sender">{message.sender}:</span>
+                                )}
+                                {displayMessage(message)}
+                                <span className="message-time">
+                                    {new Date(message.timestamp * 1000).toLocaleTimeString()}
+                                </span>
+                            </div>
+                        </div>
+                    ))}
+                    <div ref={messagesEndRef} />
+                </div>
+            </div>
+
+            <form className="message-form" onSubmit={handleSendMessage}>
+                <select
+                    value={recipient}
+                    onChange={(e) => setRecipient(e.target.value)}
+                    required
+                >
+                    <option value="">Select recipient</option>
+                    {room.users?.filter(user => user !== currentUser.username).map((user) => (
+                        <option key={user} value={user}>
+                            {user}
+                        </option>
+                    ))}
+                </select>
+
+                <input
+                    type="text"
+                    value={messageText}
+                    onChange={(e) => setMessageText(e.target.value)}
+                    placeholder="Type a message..."
+                    required
+                />
+
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    );
+}
+
+export default ChatRoom;

@@ -1,0 +1,55 @@
+// In App.js
+import LoginRegister from './components/LoginRegister';
+function LoginRegister({ onLogin, onRegister }) {
+    const [username, setUsername] = useState('');
+    const [isLogin, setIsLogin] = useState(true);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (!username.trim()) return;
+
+        if (isLogin) {
+            onLogin(username);
+        } else {
+            onRegister(username);
+        }
+    };
+
+    return (
+        <div className="auth-container">
+            <div className="auth-form">
+                <h2>{isLogin ? 'Login' : 'Register'}</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label htmlFor="username">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            placeholder="Enter username"
+                            required
+                        />
+                    </div>
+
+                    <button type="submit" className="auth-button">
+                        {isLogin ? 'Login' : 'Register'}
+                    </button>
+                </form>
+
+                <p className="auth-toggle">
+                    {isLogin ? "Don't have an account? " : "Already have an account? "}
+                    <button
+                        className="toggle-button"
+                        onClick={() => setIsLogin(!isLogin)}
+                    >
+                        {isLogin ? 'Register' : 'Login'}
+                    </button>
+                </p>
+            </div>
+        </div>
+    );
+}
+
+export default LoginRegister;

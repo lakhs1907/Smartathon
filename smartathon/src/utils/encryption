@@ -1,0 +1,117 @@
+export const generateNewKeys = async () => {
+    try {
+        // In a real PQC implementation, you would use:
+        // - Kyber for key encapsulation mechanism (KEM)
+        // - Dilithium for digital signatures
+        // For this demo, we're using RSA as a placeholder
+
+        // Generate a key pair
+        const keyPair = await window.crypto.subtle.generateKey(
+            {
+                name: "RSA-OAEP",
+                modulusLength: 2048,
+                publicExponent: new Uint8Array([1, 0, 1]),
+                hash: "SHA-256",
+            },
+            true,
+            ["encrypt", "decrypt"]
+        );
+
+        // Export the public key
+        const publicKeyBuffer = await window.crypto.subtle.exportKey(
+            "spki",
+            keyPair.publicKey
+        );
+
+        // Export the private key
+        const privateKeyBuffer = await window.crypto.subtle.exportKey(
+            "pkcs8",
+            keyPair.privateKey
+        );
+
+        // Convert to Base64
+        const publicKey = btoa(
+            String.fromCharCode(...new Uint8Array(publicKeyBuffer))
+        );
+        const privateKey = btoa(
+            String.fromCharCode(...new Uint8Array(privateKeyBuffer))
+        );
+
+        return { publicKey, privateKey };
+    } catch (error) {
+        console.error('Error generating keys:', error);
+        throw new Error('Failed to generate encryption keys');
+    }
+};
+
+export const encryptMessage = async (message, publicKeyBase64) => {
+    try {
+        // Convert Base64 public key to buffer
+        const publicKeyBytes = Uint8Array.from(atob(publicKeyBase64), c => c.charCodeAt(0));
+
+        // Import the public key
+        const publicKey = await window.crypto.subtle.importKey(
+            "spki",
+            publicKeyBytes.buffer,
+            {
+                name: "RSA-OAEP",
+                hash: "SHA-256"
+            },
+            false,
+            ["encrypt"]
+        );
+
+        // Encrypt the message
+        const messageBuffer = new TextEncoder().encode(message);
+        const encryptedBuffer = await window.crypto.subtle.encrypt(
+            {
+                name: "RSA-OAEP"
+            },
+            publicKey,
+            messageBuffer
+        );
+
+        // Convert to Base64
+        return btoa(String.fromCharCode(...new Uint8Array(encryptedBuffer)));
+    } catch (error) {
+        console.error('Error encrypting message:', error);
+        throw new Error('Failed to encrypt message');
+    }
+};
+
+export const decryptMessage = async (encryptedBase64, privateKeyBase64) => {
+    try {
+        // Convert Base64 private key to buffer
+        const privateKeyBytes = Uint8Array.from(atob(privateKeyBase64), c => c.charCodeAt(0));
+
+        // Import the private key
+        const privateKey = await window.crypto.subtle.importKey(
+            "pkcs8",
+            privateKeyBytes.buffer,
+            {
+                name: "RSA-OAEP",
+                hash: "SHA-256"
+            },
+            false,
+            ["decrypt"]
+        );
+
+        // Convert Base64 encrypted message to buffer
+        const encryptedBytes = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+
+        // Decrypt the message
+        const decryptedBuffer = await window.crypto.subtle.decrypt(
+            {
+                name: "RSA-OAEP"
+            },
+            privateKey,
+            encryptedBytes.buffer
+        );
+
+        // Convert to string
+        return new TextDecoder().decode(decryptedBuffer);
+    } catch (error) {
+        console.error('Error decrypting message:', error);
+        throw new Error('Failed to decrypt message');
+    }
+};
