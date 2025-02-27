@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatApp</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar with contacts -->
+        <div class="sidebar">
+            <!-- User profile -->
+            <div class="user-profile">
+                <div class="profile-image">
+                    <img src="/api/placeholder/50/50" alt="Profile">
+                </div>
+                <div class="profile-actions">
+                    <i class="fas fa-circle-notch"></i>
+                    <i class="fas fa-comment-alt"></i>
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+            
+            <!-- Search bar -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search or start new chat">
+                </div>
+            </div>
+            
+            <!-- Chat list -->
+            <div class="chat-list">
+                <!-- Active chat -->
+                <div class="chat-item active">
+                    <div class="chat-image">
+                        <img src="/api/placeholder/50/50" alt="Contact">
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-header">
+                            <h4>John Doe</h4>
+                            <span class="time">10:45 AM</span>
+                        </div>
+                        <div class="chat-message">
+                            <p>Hey, how are you doing?</p>
+                            <span class="unread-count">2</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Other chats -->
+                <div class="chat-item">
+                    <div class="chat-image">
+                        <img src="/api/placeholder/50/50" alt="Contact">
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-header">
+                            <h4>Jane Smith</h4>
+                            <span class="time">Yesterday</span>
+                        </div>
+                        <div class="chat-message">
+                            <p>Let me know when you're free</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-item">
+                    <div class="chat-image">
+                        <img src="/api/placeholder/50/50" alt="Contact">
+                    </div>
+                    <div class="chat-details">
+                        <div class="chat-header">
+                            <h4>Work Group</h4>
+                            <span class="time">Wed</span>
+                        </div>
+                        <div class="chat-message">
+                            <p>Meeting postponed to Thursday</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main chat area -->
+        <div class="chat-area">
+            <!-- Chat header -->
+            <div class="chat-header">
+                <div class="chat-profile">
+                    <img src="/api/placeholder/40/40" alt="Contact">
+                    <div class="chat-info">
+                        <h4>John Doe</h4>
+                        <p>Online</p>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <i class="fas fa-search"></i>
+                    <i class="fas fa-paperclip"></i>
+                    <i class="fas fa-ellipsis-v"></i>
+                </div>
+            </div>
+            
+            <!-- Chat messages -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Date divider -->
+                <div class="date-divider">
+                    <span>Today</span>
+                </div>
+                
+                <!-- Received message -->
+                <div class="message received">
+                    <div class="message-content">
+                        <p>Hey, how are you doing?</p>
+                        <span class="message-time">10:40 AM</span>
+                    </div>
+                </div>
+                
+                <!-- Sent message -->
+                <div class="message sent">
+                    <div class="message-content">
+                        <p>I'm good! How about you?</p>
+                        <span class="message-time">10:42 AM <i class="fas fa-check-double"></i></span>
+                    </div>
+                </div>
+                
+                <!-- Received message -->
+                <div class="message received">
+                    <div class="message-content">
+                        <p>Great! Are we still meeting for coffee tomorrow?</p>
+                        <span class="message-time">10:45 AM</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat input area -->
+            <div class="chat-input">
+                <div class="input-actions left">
+                    <i class="far fa-grin"></i>
+                    <i class="fas fa-paperclip"></i>
+                </div>
+                <div class="input-field">
+                    <input type="text" placeholder="Type a message" id="messageInput">
+                </div>
+                <div class="input-actions right">
+                    <i class="fas fa-microphone" id="voiceBtn"></i>
+                    <i class="fas fa-paper-plane" id="sendBtn"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
